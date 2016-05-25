@@ -1,7 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Bullet : MonoBehaviour {
+public class SniperBullet : MonoBehaviour {
+
+	void Update(){
+		if (GetComponent<Rigidbody> ().velocity.z <= 400) {
+			GetComponent<Rigidbody> ().velocity *= 1.025f;
+		}
+	}
 
 	void OnTriggerEnter(Collider collider)
 	{
@@ -10,7 +16,7 @@ public class Bullet : MonoBehaviour {
 			var health = hit.GetComponent<Health>();
 			if (health  != null)
 			{
-				health.TakeDamage(10);
+				health.TakeDamage(40);
 			}
 
 			Destroy(gameObject);
