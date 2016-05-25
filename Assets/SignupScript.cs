@@ -41,7 +41,7 @@ public class SignupScript : MonoBehaviour {
 //		}
 	}
 
-	private bool CheckExistingUser(string user, string pw, string rePw){
+	private void CheckExistingUser(string user, string pw, string rePw){
 		isExist = false;
 		HTTP.Request someRequest = new HTTP.Request( "get", url);
 		someRequest.Send( ( request ) => {
@@ -63,8 +63,6 @@ public class SignupScript : MonoBehaviour {
 				PostToDB (user, encryptPw);
 			}
 		});
-
-		return isExist;
 	}
 
 	private void PostToDB(string userName, string encryptPw){
