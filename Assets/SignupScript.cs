@@ -51,7 +51,6 @@ public class SignupScript : MonoBehaviour {
 			for(int i = 0; i < thing.list.Count; i++){
 				JSONObject j = thing.list[i];
 				JSONObject userName = j["UserName"];
-				Debug.Log("check leaw");
 				if(user == userName.str){
 					isExist = true;
 				}
