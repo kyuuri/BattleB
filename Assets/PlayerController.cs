@@ -90,13 +90,20 @@ public class PlayerController : NetworkBehaviour
 				bulletPrefab,
 				bulletSpawn.position,
 				bulletSpawn.rotation);
-			Debug.Log (bs[i].transform.forward);
-			float z = 1;
-			if(i % 2 == 0) z = 0.988f;
-			bs [i].GetComponent<Rigidbody> ().velocity = new Vector3 (0.15f * (i-1), 0, z) * 6;
-			Debug.Log (new Vector3 (0, 0.5f * (i-1), z));
+
+			if (i == 0) {
+				bs [i].GetComponent<Rigidbody> ().velocity = Quaternion.Euler(0,-10,0) * bs[i].transform.forward * 10;
+			}
+			else if (i == 1) {
+				bs [i].GetComponent<Rigidbody> ().velocity = bs [i].transform.forward * 10;
+			}
+			else if (i == 2) {
+				bs [i].GetComponent<Rigidbody> ().velocity = Quaternion.Euler(0,10,0) *bs [i].transform.forward * 10;
+			}
 			NetworkServer.Spawn(bs[i]);
-			Destroy(bs[i], 1.0f);
+			Destroy(bs[i], 0.7f);
+
+
 		}
 	}
 
@@ -124,14 +131,18 @@ public class PlayerController : NetworkBehaviour
 			// Create the Bullet from the Bullet Prefab
 			var bullet = (GameObject)Instantiate (
 				            bladePrefab,
-							bulletSpawn.position + new Vector3(0,0,1.5f),
+							bulletSpawn.position + bulletSpawn.transform.forward * 1.5f,
 				            bulletSpawn.rotation);
 
 			// Spawn the bullet on the Clients
 			//bullet.transform.localScale = new Vector3(0.4f,0.4f,3.5f);
 			NetworkServer.Spawn (bullet);
 
-			bullet.transform.parent = transform;
+			foreach (Transform ch in transform.GetComponentsInChildren<Transform>()) {
+				if (ch.CompareTag ("Player")) {
+					bullet.transform.parent = ch;
+				}
+			}
 			bladeObject = bullet;
 
 			// Destroy the bullet after 2 seconds
