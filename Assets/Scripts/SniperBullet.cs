@@ -3,9 +3,11 @@ using System.Collections;
 
 public class SniperBullet : MonoBehaviour {
 
+	public float damage;
+
 	void Update(){
 		if (GetComponent<Rigidbody> ().velocity.z <= 400) {
-			GetComponent<Rigidbody> ().velocity *= 1.025f;
+			GetComponent<Rigidbody> ().velocity *= 1.03f;
 		}
 	}
 

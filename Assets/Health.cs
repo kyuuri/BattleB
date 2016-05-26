@@ -5,16 +5,16 @@ using System.Collections;
 
 public class Health : NetworkBehaviour {
 
-	public const int maxHealth = 100;
+	public float maxHealth = 100;
 
 	public bool destroyOnDeath;
 
 	[SyncVar(hook = "OnChangeHealth")]
-	public int currentHealth = maxHealth;
+	public float currentHealth = 100;
 
 	public RectTransform healthBar;
 
-	public void TakeDamage(int amount)
+	public void TakeDamage(float amount)
 	{
 		if (!isServer)
 			return;
@@ -37,7 +37,7 @@ public class Health : NetworkBehaviour {
 		}
 	}
 
-	void OnChangeHealth (int currentHealth)
+	void OnChangeHealth (float currentHealth)
 	{
 		healthBar.sizeDelta = new Vector2(currentHealth, healthBar.sizeDelta.y);
 	}
