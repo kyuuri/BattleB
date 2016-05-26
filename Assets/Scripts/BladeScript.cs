@@ -6,6 +6,14 @@ public class BladeScript : NetworkBehaviour {
 
 	public float damage;
 	private PlayerController firingPlayer;
+	[SyncVar]
+	public int playerId;
+
+	void Update(){
+		if (playerId != 0 && firingPlayer == null) {
+			CheckPlayer ();
+		}
+	}
 
 	void Damage(Collider collider){
 		if(collider.transform.tag == "Player" ){
@@ -13,15 +21,7 @@ public class BladeScript : NetworkBehaviour {
 			var health = hit.GetComponent<Health>();
 			if (health  != null)
 			{
-				bool isDead = false;
-				float exp = health.TakeDamage (damage, ref isDead);
-
-				firingPlayer.status.exp -= exp / 2;
-
-				if (isDead) {
-					firingPlayer.score++;
-					firingPlayer.status.exp -= 50;
-				}
+				health.TakeDamage (damage, playerId);
 			}
 		}
 	}
@@ -33,6 +33,17 @@ public class BladeScript : NetworkBehaviour {
 			PlayerController tmpPlayer = allPlayers [i].GetComponent<PlayerController> ();
 			if (tmpPlayer.playerId == id) {
 				Debug.Log (tmpPlayer.score);
+				firingPlayer = tmpPlayer;
+			}
+		}
+	}
+
+	void CheckPlayer(){
+		GameObject[] allPlayers = GameObject.FindGameObjectsWithTag ("Player");
+		for (int i = 0; i < allPlayers.Length; i++) {
+			PlayerController tmpPlayer = allPlayers [i].GetComponent<PlayerController> ();
+
+			if (tmpPlayer.playerId == playerId) {
 				firingPlayer = tmpPlayer;
 			}
 		}

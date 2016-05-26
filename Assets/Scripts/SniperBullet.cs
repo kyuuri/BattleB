@@ -7,18 +7,24 @@ public class SniperBullet : NetworkBehaviour {
 	public float damage;
 	private PlayerController firingPlayer;
 	private int counter;
+	[SyncVar]
+	public int playerId;
 
 	void Update(){
+		if (playerId != 0 && firingPlayer == null) {
+			CheckPlayer ();
+		}
+
 		if (counter < 10) {
 			counter++;
 			GetComponent<Rigidbody> ().velocity = transform.forward * 7;
 		}
 		else if (counter == 10){
 			counter++;
-			GetComponent<Rigidbody> ().velocity = transform.forward * 2.1f;
+			GetComponent<Rigidbody> ().velocity = transform.forward * 2.15f;
 		}
 		else if (GetComponent<Rigidbody> ().velocity.z <= 400) {
-			GetComponent<Rigidbody> ().velocity *= 1.021f;
+			GetComponent<Rigidbody> ().velocity *= 1.025f;
 		}
 	}
 
@@ -29,15 +35,7 @@ public class SniperBullet : NetworkBehaviour {
 			var health = hit.GetComponent<Health>();
 			if (health  != null)
 			{
-				bool isDead = false;
-				float exp = health.TakeDamage (damage, ref isDead);
-
-				firingPlayer.status.exp -= exp / 2.5f;
-
-				if (isDead) {
-					firingPlayer.score++;
-					firingPlayer.status.exp -= 30;
-				}
+				health.TakeDamage (damage, playerId);
 			}
 
 			Destroy(gameObject);
@@ -51,6 +49,17 @@ public class SniperBullet : NetworkBehaviour {
 			PlayerController tmpPlayer = allPlayers [i].GetComponent<PlayerController> ();
 			if (tmpPlayer.playerId == id) {
 				Debug.Log (tmpPlayer.score);
+				firingPlayer = tmpPlayer;
+			}
+		}
+	}
+
+	void CheckPlayer(){
+		GameObject[] allPlayers = GameObject.FindGameObjectsWithTag ("Player");
+		for (int i = 0; i < allPlayers.Length; i++) {
+			PlayerController tmpPlayer = allPlayers [i].GetComponent<PlayerController> ();
+
+			if (tmpPlayer.playerId == playerId) {
 				firingPlayer = tmpPlayer;
 			}
 		}

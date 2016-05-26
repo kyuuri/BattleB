@@ -14,15 +14,19 @@ public class Health : NetworkBehaviour {
 
 	public RectTransform healthBar;
 
-	public float TakeDamage(float amount, ref bool isDead)
+	public void TakeDamage(float amount, int playerId)
 	{
 		if (!isServer)
-			return -1;
+			return;
 
 		currentHealth -= amount;
 
 		if (currentHealth <= 0) {
 			float exp = currentHealth + amount;
+
+			SendEXP (exp/2.0f + 50, playerId);
+			SendScore (playerId);
+			
 			if (destroyOnDeath) {
 				Destroy (gameObject);
 			} else {
@@ -31,16 +35,36 @@ public class Health : NetworkBehaviour {
 				// called on the Server, will be invoked on the Clients
 				RpcRespawn ();
 			}
-			isDead = true;
-			return exp;
 		} else {
-			isDead = false;
-			return amount;
+			SendEXP (amount / 2.0f, playerId);
+		}
+	}
+
+	void SendEXP(float exp, int id){
+		GameObject[] allPlayers = GameObject.FindGameObjectsWithTag ("Player");
+		for (int i = 0; i < allPlayers.Length; i++) {
+			PlayerController tmpPlayer = allPlayers [i].GetComponent<PlayerController> ();
+
+			if (tmpPlayer.playerId == id) {
+				tmpPlayer.RpcAddExp(exp);
+			}
+		}
+	}
+
+	void SendScore(int id){
+		GameObject[] allPlayers = GameObject.FindGameObjectsWithTag ("Player");
+		for (int i = 0; i < allPlayers.Length; i++) {
+			PlayerController tmpPlayer = allPlayers [i].GetComponent<PlayerController> ();
+
+			if (tmpPlayer.playerId == id) {
+				tmpPlayer.RpcAddScore ();
+			}
 		}
 	}
 
 	void OnChangeHealth (float currentHealth)
 	{
+		this.currentHealth = currentHealth;
 		healthBar.sizeDelta = new Vector2(currentHealth, healthBar.sizeDelta.y);
 	}
 

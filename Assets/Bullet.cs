@@ -4,8 +4,18 @@ using System.Collections;
 
 public class Bullet :  NetworkBehaviour{
 
+	public GameObject hitParticle;
+
 	public float damage = 10;
 	private PlayerController firingPlayer;
+	[SyncVar]
+	public int playerId;
+
+	void Update(){
+		if (playerId != 0 && firingPlayer == null) {
+			CheckPlayer ();
+		}
+	}
 
 	void OnTriggerEnter(Collider collider)
 	{
@@ -14,27 +24,26 @@ public class Bullet :  NetworkBehaviour{
 			var health = hit.GetComponent<Health>();
 			if (health  != null)
 			{
-				bool isDead = false;
-				float exp = health.TakeDamage (damage, ref isDead);
-
-				firingPlayer.status.exp -= exp / 2;
-
-				if (isDead) {
-					firingPlayer.score++;
-					firingPlayer.status.exp -= 50;
-				}
+				health.TakeDamage (damage, playerId);
 			}
+
+			var particle = (GameObject)Instantiate(
+				hitParticle,
+				transform.position, Quaternion.identity);
+			
+			Destroy (particle, 0.4f);
+
+			NetworkServer.Spawn(particle);
 			Destroy(gameObject);
 		}
 	}
 
-	[Command]
-	public void CmdSetPlayer(int id){
+	void CheckPlayer(){
 		GameObject[] allPlayers = GameObject.FindGameObjectsWithTag ("Player");
 		for (int i = 0; i < allPlayers.Length; i++) {
 			PlayerController tmpPlayer = allPlayers [i].GetComponent<PlayerController> ();
-			if (tmpPlayer.playerId == id) {
-				Debug.Log (tmpPlayer.score);
+
+			if (tmpPlayer.playerId == playerId) {
 				firingPlayer = tmpPlayer;
 			}
 		}

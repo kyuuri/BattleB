@@ -5,10 +5,12 @@ public class PlayerController : NetworkBehaviour
 {
 
 	public enum PlayerClass {NOVICE, SHOTGUN, CANNON, BLADER, SNIPER};
-	public float baseEXP = 30;
+	public float baseEXP = 50;
 
 	public int playerId;
 	public int score;
+
+	[SyncVar (hook = "OnChangeClass")]
 	public PlayerClass playerClass = PlayerClass.NOVICE;
 
 	public PlayerStatus status;
@@ -36,20 +38,8 @@ public class PlayerController : NetworkBehaviour
 		{
 			return;
 		}
-		//to be delete
-		if (status.SetClass (playerClass)) {
-			GameObject newObject = (GameObject)Instantiate (Resources.Load(playerClass.ToString() + "Type"));
-			foreach (Transform t in transform.GetComponentsInChildren<Transform>()) {
-				if (t.CompareTag ("Class")) {
-					Destroy (t.gameObject);
-					newObject.transform.parent = transform;
-					newObject.transform.localPosition = new Vector3 (0, -2.5f, 0);
-					newObject.transform.localRotation = Quaternion.Euler (0, 0, 0);
-					break;
-				}
-			}
-		}
 
+		
 		CameraScript camera = GameObject.Find("Main Camera").GetComponent<CameraScript>();
 		camera.target = gameObject;
 
@@ -65,7 +55,9 @@ public class PlayerController : NetworkBehaviour
 		if (Input.GetKey(KeyCode.Mouse0))
 		{
 			if (fireDelay <= 0) {
+				Debug.Log ("nnnn");
 				CmdFire ();
+				Debug.Log ("xxxxx");
 				fireDelay = status.fireSpeed;
 			}
 		}
@@ -83,6 +75,46 @@ public class PlayerController : NetworkBehaviour
 
 		CheckEXP ();
 		UpStat ();
+
+		if (Input.GetKeyDown ("z")) {
+			CmdChangeClass (PlayerClass.SHOTGUN);
+		}
+		else if (Input.GetKeyDown ("c")) {
+			CmdChangeClass (PlayerClass.CANNON);
+		}
+		else if (Input.GetKeyDown ("v")) {
+			CmdChangeClass (PlayerClass.BLADER);
+		}
+		else if (Input.GetKeyDown ("b")) {
+			CmdChangeClass (PlayerClass.SNIPER);
+		}
+		else if (Input.GetKeyDown ("n")) {
+			CmdChangeClass (PlayerClass.NOVICE);
+		}
+	}
+
+	void OnChangeClass(PlayerClass pc){
+		this.playerClass = pc;
+		GameObject newObject = (GameObject)Instantiate (Resources.Load(playerClass.ToString() + "Type"));
+		foreach (Transform t in transform.GetComponentsInChildren<Transform>()) {
+			if (t.CompareTag ("Class")) {
+				Destroy (t.gameObject);
+				newObject.transform.parent = transform;
+				newObject.transform.localPosition = new Vector3 (0, -2.5f, 0);
+				newObject.transform.localRotation = Quaternion.Euler (0, 0, 0);
+				break;
+			}
+		}
+		if (isLocalPlayer) {
+			status.SetClass (pc);
+		}
+	}
+
+	[Command]
+	void CmdChangeClass(PlayerClass pc){
+		if (isServer) {
+			this.playerClass = pc;
+		}
 	}
 
 	void LookAtMouse(){
@@ -114,18 +146,6 @@ public class PlayerController : NetworkBehaviour
 			transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 7 * Time.deltaTime);
 		}
 
-	}
-
-	private void AddPlayerToBullet(Bullet bullet){
-		bullet.CmdSetPlayer (playerId);
-	}
-
-	private void AddPlayerToBullet(BladeScript blade){
-		blade.CmdSetPlayer (playerId);
-	}
-
-	private void AddPlayerToBullet(SniperBullet sni){
-		sni.CmdSetPlayer (playerId);
 	}
 
 	// This [Command] code is called on the Client …
@@ -202,8 +222,7 @@ public class PlayerController : NetworkBehaviour
 		// Spawn the bullet on the Clients
 		NetworkServer.Spawn(bullet);
 
-		Bullet temp = bullet.GetComponent<Bullet> ();
-		AddPlayerToBullet (temp);
+		bullet.GetComponent<Bullet> ().playerId = (int)netId.Value;
 
 		// Destroy the bullet after 2 seconds
 		Destroy(bullet, 2.0f);
@@ -222,16 +241,13 @@ public class PlayerController : NetworkBehaviour
 				bs [i].GetComponent<Rigidbody> ().velocity = Quaternion.Euler(0,-10,0) * bs[i].transform.forward * status.bulletSpeed;
 			}
 			else if (i == 1) {
-				bs [i].GetComponent<Rigidbody> ().velocity = bs [i].transform.forward * 10;
+				bs [i].GetComponent<Rigidbody> ().velocity = bs [i].transform.forward * status.bulletSpeed;
 			}
 			else if (i == 2) {
 				bs [i].GetComponent<Rigidbody> ().velocity = Quaternion.Euler(0,10,0) *bs [i].transform.forward * status.bulletSpeed;
 			}
 			bs[i].GetComponent<Bullet> ().damage = status.damage;
 			NetworkServer.Spawn(bs[i]);
-
-			Bullet temp = bs[i].GetComponent<Bullet> ();
-			AddPlayerToBullet (temp);
 
 			Destroy(bs[i], 0.6f);
 
@@ -254,9 +270,6 @@ public class PlayerController : NetworkBehaviour
 
 		// Spawn the bullet on the Clients
 		NetworkServer.Spawn(bullet);
-
-		Bullet temp = bullet.GetComponent<Bullet> ();
-		AddPlayerToBullet (temp);
 
 		// Destroy the bullet after 2 seconds
 		Destroy(bullet, 2.5f);
@@ -283,9 +296,6 @@ public class PlayerController : NetworkBehaviour
 			}
 			bladeObject = bullet;
 
-			BladeScript temp = bullet.GetComponent<BladeScript> ();
-			AddPlayerToBullet (temp);
-
 			// Destroy the bullet after 2 seconds
 		}
 		blade = !blade;
@@ -305,9 +315,6 @@ public class PlayerController : NetworkBehaviour
 		// Spawn the bullet on the Clients
 		NetworkServer.Spawn(bullet);
 
-		SniperBullet temp = bullet.GetComponent<SniperBullet> ();
-		AddPlayerToBullet (temp);
-
 		// Destroy the bullet after 2 seconds
 		Destroy(bullet, 10.0f);
 	}
@@ -317,6 +324,20 @@ public class PlayerController : NetworkBehaviour
 		set{
 			playerClass = value;
 			status.SetClass (value);
+		}
+	}
+
+	[ClientRpc]
+	public void RpcAddExp(float exp){
+		if (isLocalPlayer) {
+			status.exp -= exp;
+		}
+	}
+
+	[ClientRpc]
+	public void RpcAddScore(){
+		if (isLocalPlayer) {
+			score++;
 		}
 	}
 

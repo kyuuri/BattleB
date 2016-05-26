@@ -44,7 +44,7 @@ public class PlayerStatus{
 			MoveSpeed = 3.0f;
 			bulletSpeed = 11;
 			fireSpeed = 0.15f;
-			damage = 11;
+			damage = 6;
 		} else if (playerClass == PlayerController.PlayerClass.CANNON) {
 			MaxHp = 120;
 			MoveSpeed = 3.0f;
