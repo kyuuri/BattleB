@@ -5,6 +5,7 @@ using System.Collections;
 public class Bullet :  NetworkBehaviour{
 
 	public GameObject hitParticle;
+	public GameObject cannonParticle;
 
 	public float damage = 10;
 	private PlayerController firingPlayer;
