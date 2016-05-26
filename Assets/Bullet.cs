@@ -28,13 +28,21 @@ public class Bullet :  NetworkBehaviour{
 				health.TakeDamage (damage, playerId);
 			}
 
-			var particle = (GameObject)Instantiate(
-				hitParticle,
-				transform.position, Quaternion.identity);
+			if (transform.transform.lossyScale.x <= 0.3f) {
+				var particle = (GameObject)Instantiate (
+					              hitParticle,
+					              transform.position, Quaternion.identity);
 			
-			Destroy (particle, 0.4f);
+				Destroy (particle, 0.4f);
+				NetworkServer.Spawn(particle);
+			} else {
+				var particle = (GameObject)Instantiate (
+					cannonParticle,
+					transform.position, Quaternion.identity);
 
-			NetworkServer.Spawn(particle);
+				Destroy (particle, 0.4f);
+				NetworkServer.Spawn(particle);
+			}
 			Destroy(gameObject);
 		}
 	}

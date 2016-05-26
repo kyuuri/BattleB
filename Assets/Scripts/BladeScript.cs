@@ -4,6 +4,7 @@ using UnityEngine.Networking;
 
 public class BladeScript : NetworkBehaviour {
 
+	public GameObject hitParticle;
 	public float damage;
 	private PlayerController firingPlayer;
 	[SyncVar]
@@ -22,6 +23,13 @@ public class BladeScript : NetworkBehaviour {
 			if (health  != null)
 			{
 				health.TakeDamage (damage, playerId);
+
+				var particle = (GameObject)Instantiate (
+					hitParticle,
+					collider.transform.position - collider.transform.up*0.7f, Quaternion.identity);
+
+				Destroy (particle, 0.2f);
+				NetworkServer.Spawn(particle);
 			}
 		}
 	}

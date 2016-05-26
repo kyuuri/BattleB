@@ -4,6 +4,7 @@ using UnityEngine.Networking;
 
 public class SniperBullet : NetworkBehaviour {
 
+	public GameObject hitParticle;
 	public float damage;
 	private PlayerController firingPlayer;
 	private int counter;
@@ -21,7 +22,7 @@ public class SniperBullet : NetworkBehaviour {
 		}
 		else if (counter == 10){
 			counter++;
-			GetComponent<Rigidbody> ().velocity = transform.forward * 2.15f;
+			GetComponent<Rigidbody> ().velocity = transform.forward * 2.05f;
 		}
 		else if (GetComponent<Rigidbody> ().velocity.z <= 400) {
 			GetComponent<Rigidbody> ().velocity *= 1.025f;
@@ -37,7 +38,12 @@ public class SniperBullet : NetworkBehaviour {
 			{
 				health.TakeDamage (damage, playerId);
 			}
+			var particle = (GameObject)Instantiate (
+				hitParticle,
+				transform.position, Quaternion.identity);
 
+			Destroy (particle, 0.4f);
+			NetworkServer.Spawn(particle);
 			Destroy(gameObject);
 		}
 	}

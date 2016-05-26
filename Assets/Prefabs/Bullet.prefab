@@ -126,7 +126,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hitParticle: {fileID: 142470, guid: a43d29360c6d3a948b3b4b9efe9a0ed6, type: 2}
-  cannonParticle: {fileID: 0}
+  cannonParticle: {fileID: 107240, guid: 163d3c20726f710438f62a4c5c5a2552, type: 2}
   damage: 10
   playerId: 0
 --- !u!114 &11443938
@@ -208,6 +208,10 @@ Prefab:
       propertyPath: hitParticle
       value: 
       objectReference: {fileID: 142470, guid: a43d29360c6d3a948b3b4b9efe9a0ed6, type: 2}
+    - target: {fileID: 0}
+      propertyPath: cannonParticle
+      value: 
+      objectReference: {fileID: 107240, guid: 163d3c20726f710438f62a4c5c5a2552, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 106566}
