@@ -18,13 +18,21 @@ public class PlayerStatus{
 	public float pointfireSpeed = 0;
 
 	public int pointLeft;
+	public PlayerController.PlayerClass currentClass;
 
 	public PlayerStatus(PlayerController.PlayerClass playerClass){
 
 		SetClass (playerClass);
 	}
 
-	public void SetClass(PlayerController.PlayerClass playerClass){
+	public bool SetClass(PlayerController.PlayerClass playerClass){
+		bool isNew = false;
+		if (currentClass != playerClass) {
+			isNew = true;
+		}
+
+		currentClass = playerClass;
+
 		if (playerClass == PlayerController.PlayerClass.NOVICE) {
 			MaxHp = 100;
 			MoveSpeed = 3.0f;
@@ -61,5 +69,7 @@ public class PlayerStatus{
 		MoveSpeed *= (pointMoveSpeed/ 5.0f + 1);
 		bulletSpeed *= (pointbulletSpeed / 5.0f + 1);
 		fireSpeed *= (pointfireSpeed / 5.0f + 1);
+
+		return isNew;
 	}
 }

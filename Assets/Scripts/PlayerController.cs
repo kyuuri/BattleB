@@ -7,6 +7,8 @@ public class PlayerController : NetworkBehaviour
 	public enum PlayerClass {NOVICE, SHOTGUN, CANNON, BLADER, SNIPER};
 	public float baseEXP = 30;
 
+	public int playerId;
+	public int score;
 	public PlayerClass playerClass = PlayerClass.NOVICE;
 
 	public PlayerStatus status;
@@ -25,6 +27,7 @@ public class PlayerController : NetworkBehaviour
 
 	void Start(){
 		status = new PlayerStatus (playerClass);
+		playerId = (int)GetComponent<NetworkIdentity> ().netId.Value;
 	}
 
 	void Update()
@@ -34,7 +37,18 @@ public class PlayerController : NetworkBehaviour
 			return;
 		}
 		//to be delete
-		status.SetClass(playerClass);
+		if (status.SetClass (playerClass)) {
+			GameObject newObject = (GameObject)Instantiate (Resources.Load(playerClass.ToString() + "Type"));
+			foreach (Transform t in transform.GetComponentsInChildren<Transform>()) {
+				if (t.CompareTag ("Class")) {
+					Destroy (t.gameObject);
+					newObject.transform.parent = transform;
+					newObject.transform.localPosition = new Vector3 (0, -2.5f, 0);
+					newObject.transform.localRotation = Quaternion.Euler (0, 0, 0);
+					break;
+				}
+			}
+		}
 
 		CameraScript camera = GameObject.Find("Main Camera").GetComponent<CameraScript>();
 		camera.target = gameObject;
@@ -102,6 +116,18 @@ public class PlayerController : NetworkBehaviour
 
 	}
 
+	private void AddPlayerToBullet(Bullet bullet){
+		bullet.CmdSetPlayer (playerId);
+	}
+
+	private void AddPlayerToBullet(BladeScript blade){
+		blade.CmdSetPlayer (playerId);
+	}
+
+	private void AddPlayerToBullet(SniperBullet sni){
+		sni.CmdSetPlayer (playerId);
+	}
+
 	// This [Command] code is called on the Client …
 	// … but it is run on the Server!
 	[Command]
@@ -135,22 +161,22 @@ public class PlayerController : NetworkBehaviour
 
 	void UpStat(){
 		if (status.pointLeft > 0) {
-			if (Input.GetKeyDown (KeyCode.Keypad1)) {
+			if (Input.GetKeyDown (KeyCode.Keypad1) || (Input.GetKeyDown (KeyCode.Alpha1))) {
 				if (status.pointMaxHp < 5) {
 					status.pointMaxHp++;
 					status.pointLeft--;
 				}
-			} else if (Input.GetKeyDown (KeyCode.Keypad2)) {
+			} else if (Input.GetKeyDown (KeyCode.Keypad2) || (Input.GetKeyDown (KeyCode.Alpha2))) {
 				if (status.pointMoveSpeed < 5) {
 					status.pointMoveSpeed++;
 					status.pointLeft--;
 				}
-			} else if (Input.GetKeyDown (KeyCode.Keypad3)) {
+			} else if (Input.GetKeyDown (KeyCode.Keypad3) || (Input.GetKeyDown (KeyCode.Alpha3))) {
 				if (status.pointbulletSpeed < 5) {
 					status.pointbulletSpeed++;
 					status.pointLeft--;
 				}
-			} else if (Input.GetKeyDown (KeyCode.Keypad4)) {
+			} else if (Input.GetKeyDown (KeyCode.Keypad4) || (Input.GetKeyDown (KeyCode.Alpha4))) {
 				if (status.pointfireSpeed < 5) {
 					status.pointfireSpeed++;
 					status.pointLeft--;
@@ -176,6 +202,9 @@ public class PlayerController : NetworkBehaviour
 		// Spawn the bullet on the Clients
 		NetworkServer.Spawn(bullet);
 
+		Bullet temp = bullet.GetComponent<Bullet> ();
+		AddPlayerToBullet (temp);
+
 		// Destroy the bullet after 2 seconds
 		Destroy(bullet, 2.0f);
 	}
@@ -200,6 +229,10 @@ public class PlayerController : NetworkBehaviour
 			}
 			bs[i].GetComponent<Bullet> ().damage = status.damage;
 			NetworkServer.Spawn(bs[i]);
+
+			Bullet temp = bs[i].GetComponent<Bullet> ();
+			AddPlayerToBullet (temp);
+
 			Destroy(bs[i], 0.6f);
 
 
@@ -221,6 +254,9 @@ public class PlayerController : NetworkBehaviour
 
 		// Spawn the bullet on the Clients
 		NetworkServer.Spawn(bullet);
+
+		Bullet temp = bullet.GetComponent<Bullet> ();
+		AddPlayerToBullet (temp);
 
 		// Destroy the bullet after 2 seconds
 		Destroy(bullet, 2.5f);
@@ -247,6 +283,9 @@ public class PlayerController : NetworkBehaviour
 			}
 			bladeObject = bullet;
 
+			BladeScript temp = bullet.GetComponent<BladeScript> ();
+			AddPlayerToBullet (temp);
+
 			// Destroy the bullet after 2 seconds
 		}
 		blade = !blade;
@@ -265,6 +304,9 @@ public class PlayerController : NetworkBehaviour
 
 		// Spawn the bullet on the Clients
 		NetworkServer.Spawn(bullet);
+
+		SniperBullet temp = bullet.GetComponent<SniperBullet> ();
+		AddPlayerToBullet (temp);
 
 		// Destroy the bullet after 2 seconds
 		Destroy(bullet, 10.0f);

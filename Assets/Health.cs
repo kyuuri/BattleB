@@ -14,26 +14,28 @@ public class Health : NetworkBehaviour {
 
 	public RectTransform healthBar;
 
-	public void TakeDamage(float amount)
+	public float TakeDamage(float amount, ref bool isDead)
 	{
 		if (!isServer)
-			return;
+			return -1;
 
 		currentHealth -= amount;
 
-		if (currentHealth <= 0)
-		{
-			if (destroyOnDeath)
-			{
-				Destroy(gameObject);
-			} 
-			else
-			{
+		if (currentHealth <= 0) {
+			float exp = currentHealth + amount;
+			if (destroyOnDeath) {
+				Destroy (gameObject);
+			} else {
 				currentHealth = maxHealth;
 
 				// called on the Server, will be invoked on the Clients
-				RpcRespawn();
+				RpcRespawn ();
 			}
+			isDead = true;
+			return exp;
+		} else {
+			isDead = false;
+			return amount;
 		}
 	}
 
