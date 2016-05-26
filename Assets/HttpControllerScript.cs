@@ -17,7 +17,7 @@ public class HttpControllerScript {
 	
 	}
 
-	public void CreateUser(string user, string pw, string rePw){
+	public void CreateUser(SignupScript signupController, string user, string pw, string rePw){
 		isExist = false;
 		HTTP.Request someRequest = new HTTP.Request( "get", url);
 		someRequest.Send( ( request ) => {
@@ -32,10 +32,19 @@ public class HttpControllerScript {
 				}
 			}
 			if(isExist){
-				Debug.Log ("This user name already exist");
-			} else if (pw == rePw) {
-				string encryptPw = Md5Sum (pw);
-				PostToDB (user, encryptPw);
+				string text = "This user name already exist";
+				signupController.SetResponseText(text);
+				Debug.Log (text);
+			} else {
+				if (pw == rePw) {
+					string encryptPw = Md5Sum (pw);
+					PostToDB (user, encryptPw);
+					signupController.SignedUpSuccess();
+				} else {
+					string text = "Doesn't match password";
+					signupController.SetResponseText(text);
+					Debug.Log (text);
+				}
 			}
 		});
 	}
@@ -103,12 +112,6 @@ public class HttpControllerScript {
 		// data.  We'll encode it to JSON for you and set the Content-Type header to application/json
 		HTTP.Request theRequest = new HTTP.Request( "post", url +"/" + user, data );
 		theRequest.Send( ( request ) => {
-
-			// we provide Object and Array convenience methods that attempt to parse the response as JSON
-			// if the response cannot be parsed, we will return null
-			// note that if you want to send json that isn't either an object ({...}) or an array ([...])
-			// that you should use JSON.JsonDecode directly on the response.Text, Object and Array are
-			// only provided for convenience
 			Hashtable result = request.response.Object;
 			if ( result == null )
 			{
@@ -122,7 +125,7 @@ public class HttpControllerScript {
 		});
 	}
 
-	public void CheckExistingUser(string user, string pw){
+	public void CheckExistingUser(LoginControllerScript loginController,string user, string pw){
 		isExist = false;
 		string encryptPw = Md5Sum (pw);
 		string checkEncryptPw ="";
@@ -146,10 +149,14 @@ public class HttpControllerScript {
 					PlayerPrefs.SetString("user", user);
 					Debug.Log("Logged In");
 				} else {
-					Debug.Log("Worng Password");
+					string text = "Wrong Password";
+					loginController.SetResponseText(text);
+					Debug.Log(text);
 				}
 			} else {
-				Debug.Log("Invalid User");
+				string text = "Invalid User";
+				loginController.SetResponseText(text);
+				Debug.Log(text);
 			}
 		});
 	}

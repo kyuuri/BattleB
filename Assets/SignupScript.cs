@@ -4,18 +4,20 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 
 public class SignupScript : MonoBehaviour {
-	private string url = "https://limitless-caverns-30248.herokuapp.com/users";
 	public InputField userName;
 	public InputField password;
 	public InputField rePassword;
 	public Button signupBtn;
 	public Button cancelBtn;
 	private bool isExist;
+	public Text responseText;
+
 	private HttpControllerScript httpController;
 
 	// Use this for initialization
 	void Start () {
 		httpController = new HttpControllerScript ();
+		responseText.enabled = false;
 	}
 	
 	// Update is called once per frame
@@ -28,11 +30,10 @@ public class SignupScript : MonoBehaviour {
 		string pw = password.text;
 		string rePw = rePassword.text;
 
-		Debug.Log ("hello");
 		if (user == "" || pw == "" || rePw == "") {
 			Debug.Log ("Uncomplete Input");
 		} else {
-			httpController.CreateUser (user, pw, rePw);
+			httpController.CreateUser (this, user, pw, rePw);
 		}
 
 //		else if (CheckExistingUser(user)) {
@@ -41,5 +42,21 @@ public class SignupScript : MonoBehaviour {
 //			string encryptPw = Md5Sum (pw);
 //			PostToDB (user, encryptPw);
 //		}
+	}
+
+	public void SetResponseText(string text){
+		responseText.enabled = true;
+		responseText.text = text;
+	}
+
+	public void SignedUpSuccess(){
+		userName.text = "";
+		password.text = "";
+		rePassword.text = "";
+		responseText.text = "Successful signup";
+	}
+
+	public void GoBack(){
+		Application.LoadLevel ("LoginScene");
 	}
 }

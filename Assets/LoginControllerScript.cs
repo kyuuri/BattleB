@@ -8,6 +8,7 @@ public class LoginControllerScript : MonoBehaviour {
 	public InputField password;
 	public Button signinBtn;
 	public Button signupBtn;
+	public Text responseText;
 	public string name;
 	public int sc;
 
@@ -19,6 +20,7 @@ public class LoginControllerScript : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		httpController = new HttpControllerScript ();
+		responseText.enabled = false;
 //		GetPlayers ();
 	}
 	
@@ -45,6 +47,18 @@ public class LoginControllerScript : MonoBehaviour {
 		string user = userName.text;
 		string pw = password.text;
 
-		httpController.CheckExistingUser (user, pw);
+		httpController.CheckExistingUser (this, user, pw);
+	}
+
+	public void SetResponseText(string text){
+		responseText.enabled = true;
+		responseText.text = text;
+	}
+
+	public void LoggedIn(){
+	}
+
+	public void GoToSignUp(){
+		Application.LoadLevel ("SignUpScene");
 	}
 }
