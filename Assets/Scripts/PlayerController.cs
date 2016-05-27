@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.UI;
 
 public class PlayerController : NetworkBehaviour
 {
@@ -27,6 +28,7 @@ public class PlayerController : NetworkBehaviour
 
 	private float fireDelay = 0;
 
+
 	void Start(){
 		status = new PlayerStatus (playerClass);
 		playerId = (int)GetComponent<NetworkIdentity> ().netId.Value;
@@ -34,6 +36,7 @@ public class PlayerController : NetworkBehaviour
 
 	void Update()
 	{
+
 		if (!isLocalPlayer)
 		{
 			return;
