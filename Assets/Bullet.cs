@@ -58,4 +58,9 @@ public class Bullet :  NetworkBehaviour{
 		}
 	}
 
+	[ClientRpc]
+	public void RpcChangeBulletSize (float size){
+		transform.localScale *= size;
+	}
+
 }

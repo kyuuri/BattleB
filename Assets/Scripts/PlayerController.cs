@@ -81,7 +81,7 @@ public class PlayerController : NetworkBehaviour
 		{
 			if (fireDelay <= 0) {
 //				Debug.Log ("nnnn");
-				CmdFire ();
+				Fire ();
 //				Debug.Log ("xxxxx");
 				fireDelay = status.fireSpeed;
 			}
@@ -101,21 +101,21 @@ public class PlayerController : NetworkBehaviour
 		CheckEXP ();
 		UpStat ();
 
-//		if (Input.GetKeyDown ("z")) {
-//			CmdChangeClass (PlayerClass.SHOTGUN);
-//		}
-//		else if (Input.GetKeyDown ("c")) {
-//			CmdChangeClass (PlayerClass.CANNON);
-//		}
-//		else if (Input.GetKeyDown ("v")) {
-//			CmdChangeClass (PlayerClass.BLADER);
-//		}
-//		else if (Input.GetKeyDown ("b")) {
-//			CmdChangeClass (PlayerClass.SNIPER);
-//		}
-//		else if (Input.GetKeyDown ("n")) {
-//			CmdChangeClass (PlayerClass.NOVICE);
-//		}
+		if (Input.GetKeyDown ("z")) {
+			CmdChangeClass (PlayerClass.SHOTGUN);
+		}
+		else if (Input.GetKeyDown ("c")) {
+			CmdChangeClass (PlayerClass.CANNON);
+		}
+		else if (Input.GetKeyDown ("v")) {
+			CmdChangeClass (PlayerClass.BLADER);
+		}
+		else if (Input.GetKeyDown ("b")) {
+			CmdChangeClass (PlayerClass.SNIPER);
+		}
+		else if (Input.GetKeyDown ("n")) {
+			CmdChangeClass (PlayerClass.NOVICE);
+		}
 	}
 
 	void OnChangeClass(PlayerClass pc){
@@ -173,21 +173,21 @@ public class PlayerController : NetworkBehaviour
 
 	}
 
-	// This [Command] code is called on the Client …
-	// … but it is run on the Server!
-	[Command]
-	void CmdFire()
+//	// This [Command] code is called on the Client …
+//	// … but it is run on the Server!
+//	[Command]
+	void Fire()
 	{
 		if (playerClass == PlayerClass.NOVICE) {
-			NoviceFire ();
+			CmdNoviceFire ();
 		} else if (playerClass == PlayerClass.SHOTGUN) {
-			ShotGunFire ();
+			CmdShotGunFire ();
 		} else if (playerClass == PlayerClass.CANNON) {
-			CannonFire ();
+			CmdCannonFire ();
 		} else if (playerClass == PlayerClass.BLADER) {
-			BladerFire ();
+			CmdBladerFire ();
 		} else if (playerClass == PlayerClass.SNIPER) {
-			SniperFire ();
+			CmdSniperFire ();
 		}
 	}
 
@@ -297,7 +297,8 @@ public class PlayerController : NetworkBehaviour
 		}
 	}
 
-	private void NoviceFire(){
+	[Command]
+	private void CmdNoviceFire(){
 		// Create the Bullet from the Bullet Prefab
 		var bullet = (GameObject)Instantiate(
 			bulletPrefab,
@@ -317,7 +318,8 @@ public class PlayerController : NetworkBehaviour
 		Destroy(bullet, 2.0f);
 	}
 
-	private void ShotGunFire(){
+	[Command]
+	private void CmdShotGunFire(){
 		GameObject[] bs = new GameObject[3];
 
 		for (int i = 0; i < 3; i++) {
@@ -346,7 +348,8 @@ public class PlayerController : NetworkBehaviour
 		}
 	}
 
-	private void CannonFire(){
+	[Command]
+	private void CmdCannonFire(){
 		// Create the Bullet from the Bullet Prefab
 		var bullet = (GameObject)Instantiate(
 			bulletPrefab,
@@ -357,46 +360,52 @@ public class PlayerController : NetworkBehaviour
 		bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * status.bulletSpeed;
 		bullet.GetComponent<Bullet> ().damage = status.damage;
 
-		bullet.transform.localScale *= 3.0f;
+		//bullet.RpcSetupBullet (3//);
 
 		// Spawn the bullet on the Clients
 		NetworkServer.Spawn(bullet);
-
+		//bullet.transform.localScale *= 3.0f;
+		bullet.GetComponent<Bullet> ().RpcChangeBulletSize (3.0f);
 		bullet.GetComponent<Bullet> ().playerId = (int)netId.Value;
 
 		// Destroy the bullet after 2 seconds
 		Destroy(bullet, 2.5f);
 	}
 
-	private void BladerFire(){
+	[Command]
+	private void CmdBladerFire(){
+		blade = !blade;
 
-		if (!blade) {
+		if (blade) {
 			// Create the Bullet from the Bullet Prefab
 			var bullet = (GameObject)Instantiate (
-				bladePrefab,
-				bulletSpawn.position + bulletSpawn.transform.forward * 1.5f,
-				bulletSpawn.rotation);
+				             bladePrefab,
+				             bulletSpawn.position + bulletSpawn.transform.forward * 1.5f,
+				             bulletSpawn.rotation);
 
 			// Spawn the bullet on the Clients
 			//bullet.transform.localScale = new Vector3(0.4f,0.4f,3.5f);
-			bullet.GetComponent<BladeScript> ().damage = status.damage;
+
 			NetworkServer.Spawn (bullet);
 
-			foreach (Transform ch in transform.GetComponentsInChildren<Transform>()) {
-				if (ch.CompareTag ("Player")) {
-					bullet.transform.parent = ch;
-				}
-			}
+			bullet.GetComponent<BladeScript> ().damage = status.damage;
+			bullet.GetComponent<BladeScript> ().playerId = (int)netId.Value;
+			bullet.GetComponent<BladeScript> ().target = gameObject;
+//			foreach (Transform ch in transform.GetComponentsInChildren<Transform>()) {
+//				if (ch.CompareTag ("Player")) {
+//						ch
+//				}
+//			}
+
 			bladeObject = bullet;
 
-			bullet.GetComponent<BladeScript> ().playerId = (int)netId.Value;
-
-			// Destroy the bullet after 2 seconds
+		} else {
+			
 		}
-		blade = !blade;
 	}
 
-	private void SniperFire(){
+	[Command]
+	private void CmdSniperFire(){
 		// Create the Bullet from the Bullet Prefab
 		var bullet = (GameObject)Instantiate(
 			sniperBulletPrefab,
