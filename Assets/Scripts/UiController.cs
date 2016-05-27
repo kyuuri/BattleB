@@ -49,7 +49,7 @@ public class UiController : MonoBehaviour {
 		skillProgress3.sizeDelta = new Vector2 (skillProgress3.sizeDelta.x,(1 - GlobalData.statProgress3 / 7 )* Screen.height / 5);
 		skillProgress4.sizeDelta = new Vector2 (skillProgress4.sizeDelta.x,(1 - GlobalData.statProgress4 / 7 )* Screen.height / 5);
 
-		unityTime.text = (int)(GlobalData.unityFinalTime - GlobalData.unityTime)+"";
-
+		int temp = (int)(GlobalData.unityFinalTime - GlobalData.unityTime);
+		unityTime.text = temp + "";
 	}
 }

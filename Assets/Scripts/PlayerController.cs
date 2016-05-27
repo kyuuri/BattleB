@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : NetworkBehaviour
 {
@@ -35,7 +36,7 @@ public class PlayerController : NetworkBehaviour
 		playerId = (int)GetComponent<NetworkIdentity> ().netId.Value;
 		GlobalData.unityTime = Network.time;
 		GlobalData.unityStartTime = Network.time;
-		GlobalData.unityFinalTime = Network.time + 300;
+		GlobalData.unityFinalTime = Network.time + 10;
 
 		if (isLocalPlayer) {
 			transform.position = new Vector3 (Random.Range (-5, 5), 0, Random.Range (-5, 5));
@@ -51,6 +52,13 @@ public class PlayerController : NetworkBehaviour
 		}
 
 		GlobalData.unityTime = Network.time;
+		Debug.Log (GlobalData.unityFinalTime -Network.time);
+		if (GlobalData.unityFinalTime -Network.time<= 0) {
+			Debug.Log("DDDDD");
+			GlobalData.allPlayers = GameObject.FindGameObjectsWithTag ("Player");
+			SceneManager.LoadScene ("ScoreBoard");
+		}
+
 		//Debug.Log (Network.time);
 		CameraScript camera = GameObject.Find("Main Camera").GetComponent<CameraScript>();
 		camera.target = gameObject;
@@ -67,9 +75,9 @@ public class PlayerController : NetworkBehaviour
 		if (Input.GetKey(KeyCode.Mouse0))
 		{
 			if (fireDelay <= 0) {
-				Debug.Log ("nnnn");
+//				Debug.Log ("nnnn");
 				CmdFire ();
-				Debug.Log ("xxxxx");
+//				Debug.Log ("xxxxx");
 				fireDelay = status.fireSpeed;
 			}
 		}
@@ -230,8 +238,8 @@ public class PlayerController : NetworkBehaviour
 				}
 			}
 
-			Debug.Log ("Up Stat : MHP = " + status.pointMaxHp + " MS = " + status.pointMoveSpeed + " BSpd = " + status.pointbulletSpeed + " DelayReduce = " + status.pointfireSpeed);
-			Debug.Log ("PointLeft = " + status.pointLeft);
+//			Debug.Log ("Up Stat : MHP = " + status.pointMaxHp + " MS = " + status.pointMoveSpeed + " BSpd = " + status.pointbulletSpeed + " DelayReduce = " + status.pointfireSpeed);
+//			Debug.Log ("PointLeft = " + status.pointLeft);
 		}
 	}
 

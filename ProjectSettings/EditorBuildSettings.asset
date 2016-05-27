@@ -13,3 +13,5 @@ EditorBuildSettings:
     path: Assets/LoginScene.unity
   - enabled: 1
     path: Assets/SignUpScene.unity
+  - enabled: 1
+    path: Assets/ScoreBoard.unity
