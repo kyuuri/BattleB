@@ -151,6 +151,7 @@ GameObject:
   - 114: {fileID: 11461852}
   - 114: {fileID: 11476244}
   - 114: {fileID: 11479112}
+  - 82: {fileID: 8284228}
   m_Layer: 0
   m_Name: NoviceType
   m_TagString: Player
@@ -413,6 +414,80 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!82 &8284228
+AudioSource:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 176998}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: 340cb615dde950a41b1234c76da7b530, type: 3}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  Priority: 0
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    - time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
 --- !u!111 &11147896
 Animation:
   m_ObjectHideFlags: 1
@@ -619,6 +694,13 @@ MonoBehaviour:
   bulletSpawn: {fileID: 448296}
   blade: 0
   bladeObject: {fileID: 139714, guid: 0ecb24367a8ef1e4a92004db9c9ba015, type: 2}
+  noviceS: {fileID: 8300000, guid: 340cb615dde950a41b1234c76da7b530, type: 3}
+  shotgunS: {fileID: 8300000, guid: 6f039907841d4ad48ae930251ca36100, type: 3}
+  sniperS: {fileID: 8300000, guid: 3e6d48d73286c544eb399c288332e266, type: 3}
+  cannonS: {fileID: 8300000, guid: d2f2d74d89e0df74f943f3e17b86f109, type: 3}
+  bladeS: {fileID: 8300000, guid: 54772ab6d57b8b14aa931e9c01968965, type: 3}
+  source: {fileID: 8284228}
+  list: []
 --- !u!114 &11479112
 MonoBehaviour:
   m_ObjectHideFlags: 1

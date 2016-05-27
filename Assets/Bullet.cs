@@ -6,6 +6,7 @@ public class Bullet :  NetworkBehaviour{
 
 	public GameObject hitParticle;
 	public GameObject cannonParticle;
+	public AudioSource source;
 
 	public float damage = 10;
 	private PlayerController firingPlayer;
@@ -21,29 +22,36 @@ public class Bullet :  NetworkBehaviour{
 	void OnTriggerEnter(Collider collider)
 	{
 		if(collider.transform.tag == "Player" ){
-			var hit = collider.gameObject;
-			var health = hit.GetComponent<Health>();
-			if (health  != null)
-			{
-				health.TakeDamage (damage, playerId);
-			}
-
-			if (transform.transform.lossyScale.x <= 0.3f) {
-				var particle = (GameObject)Instantiate (
-					              hitParticle,
-					              transform.position, Quaternion.identity);
+			int id = collider.GetComponent<PlayerController> ().playerId;
+			if (id != playerId) {
+				var hit = collider.gameObject;
+				var health = hit.GetComponent<Health> ();
+				if (health != null) {
+					health.TakeDamage (damage, playerId);
+				}
+				if (transform.transform.lossyScale.x <= 0.3f) {
+					var particle = (GameObject)Instantiate (
+						              hitParticle,
+						              transform.position, Quaternion.identity);
 			
-				Destroy (particle, 0.4f);
-				NetworkServer.Spawn(particle);
-			} else {
-				var particle = (GameObject)Instantiate (
-					cannonParticle,
-					transform.position, Quaternion.identity);
+					Destroy (particle, 0.4f);
+					if (!source.isPlaying) {
+						source.Play ();
+					}
+					NetworkServer.Spawn (particle);
+				} else {
+					var particle = (GameObject)Instantiate (
+						              cannonParticle,
+						              transform.position, Quaternion.identity);
 
-				Destroy (particle, 0.4f);
-				NetworkServer.Spawn(particle);
+					Destroy (particle, 0.4f);
+					if (!source.isPlaying) {
+						source.Play ();
+					}
+					NetworkServer.Spawn (particle);
+				}
+				Destroy (gameObject);
 			}
-			Destroy(gameObject);
 		}
 	}
 

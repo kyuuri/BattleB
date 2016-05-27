@@ -44,19 +44,19 @@ public class PlayerStatus{
 		if (playerClass == PlayerController.PlayerClass.NOVICE) {
 			MaxHp = 100;
 			MoveSpeed = 3.0f;
-			bulletSpeed = 6.0f;
+			bulletSpeed = 4.0f;
 			fireSpeed = 0.5f;
 			damage = 15;
 		} else if (playerClass == PlayerController.PlayerClass.SHOTGUN) {
 			MaxHp = 120;
 			MoveSpeed = 3.0f;
-			bulletSpeed = 11;
+			bulletSpeed = 5;
 			fireSpeed = 0.15f;
 			damage = 6;
 		} else if (playerClass == PlayerController.PlayerClass.CANNON) {
 			MaxHp = 120;
 			MoveSpeed = 3.0f;
-			bulletSpeed = 6.0f;
+			bulletSpeed = 4.0f;
 			fireSpeed = 0.65f;
 			damage = 35;
 		} else if (playerClass == PlayerController.PlayerClass.BLADER) {
@@ -69,14 +69,20 @@ public class PlayerStatus{
 			MaxHp = 100;
 			MoveSpeed = 3.0f;
 			//bulletSpeed = 11;
-			fireSpeed = 0.75f;
+			fireSpeed = 0.9f;
 			damage = 70;
+		} else if (playerClass == PlayerController.PlayerClass.SHOTGUNCANNON) {
+			MaxHp = 100;
+			MoveSpeed = 3.1f;
+			//bulletSpeed = 11;
+			fireSpeed = 0.5f;
+			damage = 20;
 		}
 
-		MaxHp *= (pointMaxHp / 5.0f + 1);
-		MoveSpeed *= (pointMoveSpeed/ 5.0f + 1);
-		bulletSpeed *= (pointbulletSpeed / 5.0f + 1);
-		fireSpeed *= (pointfireSpeed / 5.0f + 1);
+		MaxHp *= (pointMaxHp / 7.0f + 1);
+		MoveSpeed *= (pointMoveSpeed/ 10.0f + 1);
+		bulletSpeed *= (pointbulletSpeed / 7.0f + 1);
+		fireSpeed /= (pointfireSpeed / 14.0f + 1);
 
 		return isNew;
 	}

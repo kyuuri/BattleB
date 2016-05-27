@@ -5,7 +5,7 @@ public class CameraScript : MonoBehaviour {
 
     public GameObject target;
     private Vector3 destination;
-    public float speed = 10f;
+    public float speed = 30f;
 
     // Use this for initialization
     void Start() {

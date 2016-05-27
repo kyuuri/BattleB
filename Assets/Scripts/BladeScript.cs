@@ -6,6 +6,7 @@ public class BladeScript : NetworkBehaviour {
 
 	public GameObject hitParticle;
 	public float damage;
+	public AudioSource source;
 	private PlayerController firingPlayer;
 	[SyncVar]
 	public int playerId;
@@ -41,6 +42,9 @@ public class BladeScript : NetworkBehaviour {
 						              collider.transform.position - collider.transform.up * 0.7f, Quaternion.identity);
 
 					Destroy (particle, 0.2f);
+					if (!source.isPlaying) {
+						source.Play ();
+					}
 					NetworkServer.Spawn (particle);
 				}
 			}
@@ -109,5 +113,10 @@ public class BladeScript : NetworkBehaviour {
 			transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 7 * Time.deltaTime);
 		}
 
+	}
+
+	[ClientRpc]
+	public void RpcDestroy(){
+		Destroy (gameObject);
 	}
 }

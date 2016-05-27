@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 public class PlayerController : NetworkBehaviour
 {
 
-	public enum PlayerClass {NOVICE, SHOTGUN, CANNON, BLADER, SNIPER};
+	public enum PlayerClass {NOVICE, SHOTGUN, CANNON, BLADER, SNIPER, SHOTGUNCANNON};
 	public float baseEXP = 50;
 	public float maxEXP = 100;
 
@@ -33,6 +33,14 @@ public class PlayerController : NetworkBehaviour
 
 	private float fireDelay = 0;
 
+	public AudioClip noviceS;
+	public AudioClip shotgunS;
+	public AudioClip sniperS;
+	public AudioClip cannonS;
+	public AudioClip bladeS;
+
+	public AudioSource source;
+
 	public GameObject[] list;
 
 
@@ -41,10 +49,10 @@ public class PlayerController : NetworkBehaviour
 		playerId = (int)GetComponent<NetworkIdentity> ().netId.Value;
 		GlobalData.unityTime = Network.time;
 		GlobalData.unityStartTime = Network.time;
-		GlobalData.unityFinalTime = Network.time + 10;
+		GlobalData.unityFinalTime = Network.time + 420;
 
 		if (isLocalPlayer) {
-			transform.position = new Vector3 (Random.Range (-5, 5), 0, Random.Range (-5, 5));
+			transform.position = new Vector3 (Random.Range (-25, 25), 0, Random.Range (-25, 25));
 		}
 	}
 
@@ -59,7 +67,7 @@ public class PlayerController : NetworkBehaviour
 		}
 
 		GlobalData.unityTime = Network.time;
-		Debug.Log (GlobalData.unityFinalTime -Network.time);
+		//Debug.Log (GlobalData.unityFinalTime -Network.time);
 		if (GlobalData.unityFinalTime -Network.time<= 0) {
 			Debug.Log("DDDDD");
 			list = GameObject.FindGameObjectsWithTag ("Player");
@@ -80,12 +88,22 @@ public class PlayerController : NetworkBehaviour
 		CameraScript camera = GameObject.Find("Main Camera").GetComponent<CameraScript>();
 		camera.target = gameObject;
 
-		var hori = Input.GetAxis("Horizontal") * Time.deltaTime * 3.0f;
-		var verti = Input.GetAxis("Vertical") * Time.deltaTime * 3.0f;
+		var hori = Input.GetAxis("Horizontal") * Time.deltaTime * status.MoveSpeed;
+		var verti = Input.GetAxis("Vertical") * Time.deltaTime * status.MoveSpeed;
 
 		Vector3 pos = transform.position;
+		float x = pos.x + hori;
+		float z = pos.z + verti;
 
-		transform.position = new Vector3 (pos.x + hori, 0, pos.z + verti);
+		if (x < -29)
+			x = -29;
+		if (x > 24)
+			x = 24;
+		if (z < -29)
+			z = -29;
+		if (z > 29.5f)
+			z = 29.5f;
+		transform.position = new Vector3 (x , 0, z);
 
 		LookAtMouse ();
 
@@ -102,8 +120,8 @@ public class PlayerController : NetworkBehaviour
 			fireDelay -= Time.deltaTime;
 		}
 
-		if (!blade) {
-			Destroy (bladeObject);
+		if (!blade && bladeObject) {
+			bladeObject.GetComponent<BladeScript> ().RpcDestroy ();
 		}
 
 		if (Input.GetKeyDown("7") && Input.GetKeyDown("8") && Input.GetKeyDown("9")) {
@@ -200,6 +218,8 @@ public class PlayerController : NetworkBehaviour
 			CmdBladerFire ();
 		} else if (playerClass == PlayerClass.SNIPER) {
 			CmdSniperFire ();
+		} else if (playerClass == PlayerClass.SHOTGUNCANNON) {
+			CmdShotgunCannonFire ();
 		}
 	}
 
@@ -259,6 +279,7 @@ public class PlayerController : NetworkBehaviour
 					GlobalData.statProgress4 = status.pointfireSpeed;
 				}
 			}
+			status.SetClass (playerClass);
 		}
 		if(status.pointClass > 0){
 			if (Input.GetKeyDown (KeyCode.F1)) {
@@ -295,7 +316,19 @@ public class PlayerController : NetworkBehaviour
 	}
 
 	void ChangeClass(float c1, float c2, float c3, float c4){
-		if (c1 == 1) {
+		if (c1 == 1 && c2 == 1) {
+			CmdChangeClass (PlayerClass.SHOTGUNCANNON);
+		}
+//		else if (c2 == 1) {
+//			CmdChangeClass (PlayerClass.CANNON);
+//		}
+//		else if (c3 == 1) {
+//			CmdChangeClass (PlayerClass.BLADER);
+//		}
+//		else if (c4 == 1) {
+//			CmdChangeClass (PlayerClass.SNIPER);
+//		}
+		else if (c1 == 1) {
 			CmdChangeClass (PlayerClass.SHOTGUN);
 		}
 		else if (c2 == 1) {
@@ -312,6 +345,8 @@ public class PlayerController : NetworkBehaviour
 	[Command]
 	private void CmdNoviceFire(){
 		// Create the Bullet from the Bullet Prefab
+		source.clip = noviceS;
+		source.Play();
 		var bullet = (GameObject)Instantiate(
 			bulletPrefab,
 			bulletSpawn.position,
@@ -332,6 +367,8 @@ public class PlayerController : NetworkBehaviour
 
 	[Command]
 	private void CmdShotGunFire(){
+		source.clip = shotgunS;
+		source.Play();
 		GameObject[] bs = new GameObject[3];
 
 		for (int i = 0; i < 3; i++) {
@@ -363,6 +400,8 @@ public class PlayerController : NetworkBehaviour
 	[Command]
 	private void CmdCannonFire(){
 		// Create the Bullet from the Bullet Prefab
+		source.clip = cannonS;
+		source.Play();
 		var bullet = (GameObject)Instantiate(
 			bulletPrefab,
 			bulletSpawn.position,
@@ -386,6 +425,8 @@ public class PlayerController : NetworkBehaviour
 
 	[Command]
 	private void CmdBladerFire(){
+		source.clip = bladeS;
+		source.Play();
 		blade = !blade;
 
 		if (blade) {
@@ -418,6 +459,8 @@ public class PlayerController : NetworkBehaviour
 
 	[Command]
 	private void CmdSniperFire(){
+		source.clip = sniperS;
+		source.Play();
 		// Create the Bullet from the Bullet Prefab
 		var bullet = (GameObject)Instantiate(
 			sniperBulletPrefab,
@@ -435,6 +478,36 @@ public class PlayerController : NetworkBehaviour
 
 		// Destroy the bullet after 2 seconds
 		Destroy(bullet, 10.0f);
+	}
+
+	[Command]
+	private void CmdShotgunCannonFire(){
+		source.clip = shotgunS;
+		source.Play();
+		GameObject[] bs = new GameObject[3];
+
+		for (int i = 0; i < 2; i++) {
+			bs [i] = (GameObject)Instantiate (
+				bulletPrefab,
+				bulletSpawn.position,
+				bulletSpawn.rotation);
+
+			if (i == 0) {
+				bs [i].GetComponent<Rigidbody> ().velocity = Quaternion.Euler(0,-5,0) * bs[i].transform.forward * status.bulletSpeed;
+			}
+			else if (i == 1) {
+				bs [i].GetComponent<Rigidbody> ().velocity = Quaternion.Euler(0,5,0) *bs [i].transform.forward * status.bulletSpeed;
+			}
+			bs[i].GetComponent<Bullet> ().damage = status.damage;
+			NetworkServer.Spawn(bs[i]);
+
+			bs[i].GetComponent<Bullet> ().RpcChangeBulletSize (3.0f);
+			bs[i].GetComponent<Bullet> ().playerId = (int)netId.Value;
+
+			Destroy(bs[i], 2.5f);
+
+
+		}
 	}
 
 	public PlayerClass CurrentPlayerClass{

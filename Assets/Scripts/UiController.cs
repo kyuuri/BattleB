@@ -55,11 +55,11 @@ public class UiController : MonoBehaviour {
 		lv.text = "LV "+ GlobalData.lv;
 		kill.text = "Kill " + GlobalData.kill;
 		lvProgress.sizeDelta = new Vector2((1 - (GlobalData.maxExp - GlobalData.exp)/ GlobalData.maxExp) * Screen.width, lvProgress.sizeDelta.y);
-		Debug.Log ("need exp = " + GlobalData.exp);
-		Debug.Log ("max exp = " + GlobalData.maxExp);
-		Debug.Log (lvProgress.sizeDelta);
-
-		Debug.Log (GlobalData.statProgress1);
+//		Debug.Log ("need exp = " + GlobalData.exp);
+//		Debug.Log ("max exp = " + GlobalData.maxExp);
+//		Debug.Log (lvProgress.sizeDelta);
+//
+//		Debug.Log (GlobalData.statProgress1);
 	
 		int temp = (int)(GlobalData.unityFinalTime - GlobalData.unityTime);
 		unityTime.text = temp + "";

@@ -7,6 +7,7 @@ public class SniperBullet : NetworkBehaviour {
 	public GameObject hitParticle;
 	public float damage;
 	private PlayerController firingPlayer;
+	public AudioSource source;
 	private int counter;
 	[SyncVar]
 	public int playerId;
@@ -32,19 +33,24 @@ public class SniperBullet : NetworkBehaviour {
 	void OnTriggerEnter(Collider collider)
 	{
 		if(collider.transform.tag == "Player" ){
-			var hit = collider.gameObject;
-			var health = hit.GetComponent<Health>();
-			if (health  != null)
-			{
-				health.TakeDamage (damage, playerId);
-			}
-			var particle = (GameObject)Instantiate (
-				hitParticle,
-				transform.position, Quaternion.identity);
+			int id = collider.GetComponent<PlayerController> ().playerId;
+			if (id != playerId) {
+				var hit = collider.gameObject;
+				var health = hit.GetComponent<Health> ();
+				if (health != null) {
+					health.TakeDamage (damage, playerId);
+				}
+				var particle = (GameObject)Instantiate (
+					              hitParticle,
+					              transform.position, Quaternion.identity);
 
-			Destroy (particle, 0.4f);
-			NetworkServer.Spawn(particle);
-			Destroy(gameObject);
+				Destroy (particle, 0.4f);
+				if (!source.isPlaying) {
+					source.Play ();
+				}
+				NetworkServer.Spawn (particle);
+				Destroy (gameObject);
+			}
 		}
 	}
 

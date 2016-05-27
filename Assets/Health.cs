@@ -70,10 +70,13 @@ public class Health : NetworkBehaviour {
 
 	[ClientRpc]
 	void RpcRespawn()
-	{        if (isLocalPlayer)
+	{   
+		if (isLocalPlayer)
 		{
 			// Set the player’s position to origin
-			transform.position = new Vector3 (Random.Range (-5, 5), 0, Random.Range (-5, 5));
+			transform.position = new Vector3 (Random.Range (-25, 25), 0, Random.Range (-25, 25));
+
+
 		}
 	}
 }
