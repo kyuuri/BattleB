@@ -41,7 +41,7 @@ public class PlayerController : NetworkBehaviour
 		playerId = (int)GetComponent<NetworkIdentity> ().netId.Value;
 		GlobalData.unityTime = Network.time;
 		GlobalData.unityStartTime = Network.time;
-		GlobalData.unityFinalTime = Network.time + 420;
+		GlobalData.unityFinalTime = Network.time + 10;
 
 		if (isLocalPlayer) {
 			transform.position = new Vector3 (Random.Range (-5, 5), 0, Random.Range (-5, 5));
@@ -68,9 +68,11 @@ public class PlayerController : NetworkBehaviour
 			for (int i = 0; i < list.Length; i++) {
 				PlayerController player = list [i].GetComponent<PlayerController> ();
 				scoreList [i] = player.score;
-				nameList [i] = player.name;
+				nameList [i] = player.playerName;
 
 			}
+			GlobalData.allPlayerScore = scoreList;
+			GlobalData.allPlayersName = nameList;
 			SceneManager.LoadScene ("RankingScene");
 		}
 
