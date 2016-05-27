@@ -68,6 +68,6 @@ public class Ranking : MonoBehaviour {
 
 	}
 	public void GoToLobby(){
-		Application.LoadLevel ("NetWorkLobby");
+		Application.LoadLevel ("NetworkLobby");
 	}
 }

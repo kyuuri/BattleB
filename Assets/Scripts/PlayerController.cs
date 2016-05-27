@@ -49,7 +49,7 @@ public class PlayerController : NetworkBehaviour
 		playerId = (int)GetComponent<NetworkIdentity> ().netId.Value;
 		GlobalData.unityTime = Network.time;
 		GlobalData.unityStartTime = Network.time;
-		GlobalData.unityFinalTime = Network.time + 60;
+		GlobalData.unityFinalTime = Network.time + 240;
 
 		if (isLocalPlayer) {
 			transform.position = new Vector3 (Random.Range (-25, 25), 0, Random.Range (-25, 25));
