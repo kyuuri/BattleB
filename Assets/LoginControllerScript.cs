@@ -56,6 +56,7 @@ public class LoginControllerScript : MonoBehaviour {
 	}
 
 	public void LoggedIn(){
+		Application.LoadLevel ("NetworkLobby");
 	}
 
 	public void GoToSignUp(){
