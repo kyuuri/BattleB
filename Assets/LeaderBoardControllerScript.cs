@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System;
 
 public class LeaderBoardControllerScript : MonoBehaviour {
 	private string url = "https://limitless-caverns-30248.herokuapp.com/users";
@@ -36,13 +37,13 @@ public class LeaderBoardControllerScript : MonoBehaviour {
 		board.SetActive (true);
 		for (int i = 0; i < 5; i++) {
 			setScore (i, users [i]);
-			Debug.Log (i);
+			Debug.Log (users[i][1]);
 		}
 	}
 
 	private static int CompareListByScore(string[] i1, string[] i2)
 	{
-		return i2[1].CompareTo(i1[1]); 
+		return Int32.Parse(i2[1]) - Int32.Parse(i1[1]) ; 
 	}
 
 	private void GetPlayers () {

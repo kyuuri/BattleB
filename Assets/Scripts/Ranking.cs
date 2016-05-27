@@ -7,11 +7,17 @@ public class Ranking : MonoBehaviour {
 	public GameObject[] allPlayer;
 	private string[,] listUsers;
 	public int userNum = 10;
+	private HttpControllerScript httpController;
 
 	// Use this for initialization
 	void Start () {
+		httpController = new HttpControllerScript ();
 		int[] scoreList = GlobalData.allPlayerScore;
 		string[] nameList = GlobalData.allPlayersName;
+		if (scoreList != null) {
+			userNum = scoreList.Length;
+			
+		
 //		string[] nameList = new string[3];
 //			int[] scoreList = new int[3];
 
@@ -29,21 +35,24 @@ public class Ranking : MonoBehaviour {
 //		nameList[2] = "Kuy";
 //		scoreList [2] = 10;
 
-		Debug.Log ("------------------");
-		Array.Sort (scoreList, nameList);
+			Debug.Log ("------------------");
+			Array.Sort (scoreList, nameList);
 
-		for (int i = 0; i < scoreList.Length; i++) {
+			for (int i = 0; i < scoreList.Length; i++) {
 
-			Debug.Log ("index " + i + " " + nameList[i] + " " + scoreList[i]);
+				Debug.Log ("index " + i + " " + nameList [i] + " " + scoreList [i]);
+			}
+			
+			for (int i = scoreList.Length - 1; i >= 0; i--) {
+				Debug.Log (i);
+				GameObject.Find ("Score (" + (userNum - i - 1) + ")").GetComponent<Text> ().text = scoreList [i] + "";
+				GameObject.Find ("Name (" + (userNum - i - 1) + ")").GetComponent<Text> ().text = nameList [i];
+			}
+
+			for (int i = 0; i < userNum; i++) {
+				httpController.PutScore (nameList [i], scoreList [i]);
+			}
 		}
-
-//		CombineNameWithScore (nameList, scoreList);
-		//		Debug.Log (allPlayer.Length);
-		//		for (int index = 0; index < 10; index++) {
-		//			PlayerController player = allPlayer [index].GetComponent<PlayerController> ();
-		////			GameObject.Find ("Score (" + index + ")").GetComponent<Text> ().text;
-		//			Debug.Log(player.name+" = "+player.score);
-		//		}
 
 
 	}
@@ -57,5 +66,8 @@ public class Ranking : MonoBehaviour {
 	private void CombineNameWithScore(string[] names, int[] scores){
 		Debug.Log (name.Length);
 
+	}
+	public void GoToLobby(){
+		Application.LoadLevel ("NetWorkLobby");
 	}
 }
