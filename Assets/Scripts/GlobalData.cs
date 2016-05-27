@@ -13,5 +13,5 @@ public static class GlobalData {
 	public static float statProgress2 = 0; //
 	public static float statProgress3 = 0; //
 	public static float statProgress4 = 0; //
-
+	public static double unityTime = 0;
 }

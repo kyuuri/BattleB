@@ -15,6 +15,7 @@ public class UiController : MonoBehaviour {
 	public RectTransform skillProgress3;
 	public RectTransform skillProgress4;
 	public Transform tabPanel;
+	public Text unityTime;
 
 	// Use this for initialization
 	void Start () {
@@ -48,6 +49,7 @@ public class UiController : MonoBehaviour {
 		skillProgress3.sizeDelta = new Vector2 (skillProgress3.sizeDelta.x,(1 - GlobalData.statProgress3 / 7 )* Screen.height / 5);
 		skillProgress4.sizeDelta = new Vector2 (skillProgress4.sizeDelta.x,(1 - GlobalData.statProgress4 / 7 )* Screen.height / 5);
 
+		unityTime.text = GlobalData.unityTime+"";
 
 	}
 }

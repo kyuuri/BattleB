@@ -47,7 +47,8 @@ public class PlayerController : NetworkBehaviour
 			return;
 		}
 
-		
+		GlobalData.unityTime = Network.time;
+		//Debug.Log (Network.time);
 		CameraScript camera = GameObject.Find("Main Camera").GetComponent<CameraScript>();
 		camera.target = gameObject;
 
