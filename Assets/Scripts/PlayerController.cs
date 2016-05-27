@@ -33,6 +33,9 @@ public class PlayerController : NetworkBehaviour
 	void Start(){
 		status = new PlayerStatus (playerClass);
 		playerId = (int)GetComponent<NetworkIdentity> ().netId.Value;
+		GlobalData.unityTime = Network.time;
+		GlobalData.unityStartTime = Network.time;
+		GlobalData.unityFinalTime = Network.time + 300;
 
 		if (isLocalPlayer) {
 			transform.position = new Vector3 (Random.Range (-5, 5), 0, Random.Range (-5, 5));

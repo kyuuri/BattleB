@@ -62,7 +62,8 @@ namespace UnityStandardAssets.Network
 
             //setup the player data on UI. The value are SyncVar so the player
             //will be created with the right value currently on server
-            OnMyName(playerName);
+//            OnMyName(playerName);
+			OnMyName(PlayerPrefs.GetString("user"));
             OnMyColor(playerColor);
         }
 
