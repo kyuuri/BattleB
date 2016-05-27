@@ -30,6 +30,8 @@ public class PlayerController : NetworkBehaviour
 
 	private float fireDelay = 0;
 
+	public GameObject[] list;
+
 
 	void Start(){
 		status = new PlayerStatus (playerClass);
@@ -55,8 +57,16 @@ public class PlayerController : NetworkBehaviour
 		Debug.Log (GlobalData.unityFinalTime -Network.time);
 		if (GlobalData.unityFinalTime -Network.time<= 0) {
 			Debug.Log("DDDDD");
-			GlobalData.allPlayers = GameObject.FindGameObjectsWithTag ("Player");
-			SceneManager.LoadScene ("ScoreBoard");
+			list = GameObject.FindGameObjectsWithTag ("Player");
+			int[] scoreList = new int[list.Length];
+			string[] nameList = new string[list.Length];
+			for (int i = 0; i < list.Length; i++) {
+				PlayerController player = list [i].GetComponent<PlayerController> ();
+				scoreList [i] = player.score;
+				nameList [i] = player.name;
+
+			}
+			SceneManager.LoadScene ("RankingScene");
 		}
 
 		//Debug.Log (Network.time);
