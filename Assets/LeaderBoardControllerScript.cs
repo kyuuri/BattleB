@@ -34,7 +34,7 @@ public class LeaderBoardControllerScript : MonoBehaviour {
 	private void ShowUsers(){
 		users.Sort(CompareListByScore);
 		board.SetActive (true);
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 5; i++) {
 			setScore (i, users [i]);
 			Debug.Log (i);
 		}
