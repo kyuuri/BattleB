@@ -33,13 +33,15 @@ public class PlayerController : NetworkBehaviour
 
 	private float fireDelay = 0;
 
+	public GameObject[] list;
+
 
 	void Start(){
 		status = new PlayerStatus (playerClass);
 		playerId = (int)GetComponent<NetworkIdentity> ().netId.Value;
 		GlobalData.unityTime = Network.time;
 		GlobalData.unityStartTime = Network.time;
-		GlobalData.unityFinalTime = Network.time + 420;
+		GlobalData.unityFinalTime = Network.time + 10;
 
 		if (isLocalPlayer) {
 			transform.position = new Vector3 (Random.Range (-5, 5), 0, Random.Range (-5, 5));
@@ -60,8 +62,18 @@ public class PlayerController : NetworkBehaviour
 		Debug.Log (GlobalData.unityFinalTime -Network.time);
 		if (GlobalData.unityFinalTime -Network.time<= 0) {
 			Debug.Log("DDDDD");
-			GlobalData.allPlayers = GameObject.FindGameObjectsWithTag ("Player");
-			SceneManager.LoadScene ("ScoreBoard");
+			list = GameObject.FindGameObjectsWithTag ("Player");
+			int[] scoreList = new int[list.Length];
+			string[] nameList = new string[list.Length];
+			for (int i = 0; i < list.Length; i++) {
+				PlayerController player = list [i].GetComponent<PlayerController> ();
+				scoreList [i] = player.score;
+				nameList [i] = player.playerName;
+
+			}
+			GlobalData.allPlayerScore = scoreList;
+			GlobalData.allPlayersName = nameList;
+			SceneManager.LoadScene ("RankingScene");
 		}
 
 		//Debug.Log (Network.time);

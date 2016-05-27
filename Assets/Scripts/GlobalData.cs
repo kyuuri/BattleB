@@ -24,5 +24,6 @@ public static class GlobalData {
 	public static double unityTime = 0;
 	public static double unityStartTime = 0;
 	public static double unityFinalTime = 0;
-	public static GameObject[] allPlayers;
+	public static string[] allPlayersName;
+	public static int[] allPlayerScore;
 }
