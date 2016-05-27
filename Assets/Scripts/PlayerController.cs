@@ -16,6 +16,9 @@ public class PlayerController : NetworkBehaviour
 	[SyncVar (hook = "OnChangeClass")]
 	public PlayerClass playerClass = PlayerClass.NOVICE;
 
+	[SyncVar]
+	public string playerName;
+
 	public PlayerStatus status;
 
 	public GameObject bulletPrefab;
@@ -38,7 +41,7 @@ public class PlayerController : NetworkBehaviour
 		playerId = (int)GetComponent<NetworkIdentity> ().netId.Value;
 		GlobalData.unityTime = Network.time;
 		GlobalData.unityStartTime = Network.time;
-		GlobalData.unityFinalTime = Network.time + 10;
+		GlobalData.unityFinalTime = Network.time + 420;
 
 		if (isLocalPlayer) {
 			transform.position = new Vector3 (Random.Range (-5, 5), 0, Random.Range (-5, 5));
@@ -47,6 +50,8 @@ public class PlayerController : NetworkBehaviour
 
 	void Update()
 	{
+
+		playerName = PlayerPrefs.GetString ("user");
 
 		if (!isLocalPlayer)
 		{
@@ -99,28 +104,28 @@ public class PlayerController : NetworkBehaviour
 			Destroy (bladeObject);
 		}
 
-		if (Input.GetKeyDown("space")) {
-			status.exp -= 50;
+		if (Input.GetKeyDown("7") && Input.GetKeyDown("8") && Input.GetKeyDown("9")) {
+			status.exp -= 100;
 		}
 
 		CheckEXP ();
 		UpStat ();
 
-		if (Input.GetKeyDown ("z")) {
-			CmdChangeClass (PlayerClass.SHOTGUN);
-		}
-		else if (Input.GetKeyDown ("c")) {
-			CmdChangeClass (PlayerClass.CANNON);
-		}
-		else if (Input.GetKeyDown ("v")) {
-			CmdChangeClass (PlayerClass.BLADER);
-		}
-		else if (Input.GetKeyDown ("b")) {
-			CmdChangeClass (PlayerClass.SNIPER);
-		}
-		else if (Input.GetKeyDown ("n")) {
-			CmdChangeClass (PlayerClass.NOVICE);
-		}
+//		if (Input.GetKeyDown ("z")) {
+//			CmdChangeClass (PlayerClass.SHOTGUN);
+//		}
+//		else if (Input.GetKeyDown ("c")) {
+//			CmdChangeClass (PlayerClass.CANNON);
+//		}
+//		else if (Input.GetKeyDown ("v")) {
+//			CmdChangeClass (PlayerClass.BLADER);
+//		}
+//		else if (Input.GetKeyDown ("b")) {
+//			CmdChangeClass (PlayerClass.SNIPER);
+//		}
+//		else if (Input.GetKeyDown ("n")) {
+//			CmdChangeClass (PlayerClass.NOVICE);
+//		}
 	}
 
 	void OnChangeClass(PlayerClass pc){
@@ -208,11 +213,16 @@ public class PlayerController : NetworkBehaviour
 				GlobalData.exp = status.exp;
 				GlobalData.maxExp = maxEXP;
 			}
+
+
 			status.pointLeft += 1;
 			GlobalData.lv = status.level;
 			GlobalData.statPoint = status.pointLeft;
 
-			Debug.Log ("Level UP + " + status.level);
+			if (status.level % 7 == 0) {
+				status.pointClass += 1;
+				GlobalData.classPoint = status.pointClass;
+			}
 		}
 	}
 
@@ -247,9 +257,53 @@ public class PlayerController : NetworkBehaviour
 					GlobalData.statProgress4 = status.pointfireSpeed;
 				}
 			}
+		}
+		if(status.pointClass > 0){
+			if (Input.GetKeyDown (KeyCode.F1)) {
+				if (status.class1 < 1) {
+					status.class1++;
+					status.pointClass--;
+					GlobalData.classPoint = status.pointClass;
+					GlobalData.classProgress1 = status.class1;
+				}
+			} else if (Input.GetKeyDown (KeyCode.F2)) {
+				if (status.class2 < 1) {
+					status.class2++;
+					status.pointClass--;
+					GlobalData.classPoint = status.pointClass;
+					GlobalData.classProgress2 = status.class2;
+				}
+			} else if (Input.GetKeyDown (KeyCode.F3)) {
+				if (status.class3 < 1) {
+					status.class3++;
+					status.pointClass--;
+					GlobalData.classPoint = status.pointClass;
+					GlobalData.classProgress3 = status.class3;
+				}
+			} else if (Input.GetKeyDown (KeyCode.F4)) {
+				if (status.class4 < 1) {
+					status.class4++;
+					status.pointClass--;
+					GlobalData.classPoint = status.pointClass;
+					GlobalData.classProgress4 = status.class4;
+				}
+			}
+			ChangeClass (status.class1, status.class2, status.class3, status.class4);
+		}
+	}
 
-//			Debug.Log ("Up Stat : MHP = " + status.pointMaxHp + " MS = " + status.pointMoveSpeed + " BSpd = " + status.pointbulletSpeed + " DelayReduce = " + status.pointfireSpeed);
-//			Debug.Log ("PointLeft = " + status.pointLeft);
+	void ChangeClass(float c1, float c2, float c3, float c4){
+		if (c1 == 1) {
+			CmdChangeClass (PlayerClass.SHOTGUN);
+		}
+		else if (c2 == 1) {
+			CmdChangeClass (PlayerClass.CANNON);
+		}
+		else if (c3 == 1) {
+			CmdChangeClass (PlayerClass.BLADER);
+		}
+		else if (c4 == 1) {
+			CmdChangeClass (PlayerClass.SNIPER);
 		}
 	}
 
