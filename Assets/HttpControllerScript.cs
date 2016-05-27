@@ -148,6 +148,7 @@ public class HttpControllerScript {
 				if(encryptPw == checkEncryptPw){
 					PlayerPrefs.SetString("user", user);
 					Debug.Log("Logged In");
+					loginController.LoggedIn();
 				} else {
 					string text = "Wrong Password";
 					loginController.SetResponseText(text);
