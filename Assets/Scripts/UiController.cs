@@ -10,10 +10,18 @@ public class UiController : MonoBehaviour {
 	public Text kill;
 	public RectTransform bg;
 	public RectTransform lvProgress;
-	public RectTransform skillProgress1;
-	public RectTransform skillProgress2;
-	public RectTransform skillProgress3;
-	public RectTransform skillProgress4;
+	public Text skillProgress1;
+	public Text skillProgress2;
+	public Text skillProgress3;
+	public Text skillProgress4;
+	public Text skillProgress5;
+
+	public Text classProgress1;
+	public Text classProgress2;
+	public Text classProgress3;
+	public Text classProgress4;
+	public Text classProgress5;
+
 	public Transform tabPanel;
 	public Text unityTime;
 
@@ -21,20 +29,28 @@ public class UiController : MonoBehaviour {
 	void Start () {
 		bg.sizeDelta = new Vector2(Screen.width, 20);
 		lvProgress.sizeDelta = new Vector2(Screen.width, 20);
-
-		skillProgress1.sizeDelta = new Vector2 (10, Screen.height / 5);
-		skillProgress2.sizeDelta = new Vector2 (10, Screen.height / 5);
-		skillProgress3.sizeDelta = new Vector2 (10, Screen.height / 5);
-		skillProgress4.sizeDelta = new Vector2 (10, Screen.height / 5);
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		if (Input.GetKey (KeyCode.Tab)) {
+		if (Input.GetKey (KeyCode.Tab) || GlobalData.statPoint > 0) {
 			tabPanel.gameObject.SetActive (true);
 		} else {
 			tabPanel.gameObject.SetActive (false);
 		}
+
+
+		skillProgress1.text = GlobalData.statProgress1+"";
+		skillProgress2.text = GlobalData.statProgress2+"";
+		skillProgress3.text = GlobalData.statProgress3+"";
+		skillProgress4.text = GlobalData.statProgress4+"";
+		skillProgress5.text = GlobalData.statPoint+"";
+
+		classProgress1.text = GlobalData.classProgress1+"";
+		classProgress2.text = GlobalData.classProgress2+"";
+		classProgress3.text = GlobalData.classProgress3+"";
+		classProgress4.text = GlobalData.classProgress4+"";
+		classProgress5.text = GlobalData.classPoint+"";
 
 		lv.text = "LV "+ GlobalData.lv;
 		kill.text = "Kill " + GlobalData.kill;
@@ -44,11 +60,7 @@ public class UiController : MonoBehaviour {
 		Debug.Log (lvProgress.sizeDelta);
 
 		Debug.Log (GlobalData.statProgress1);
-		skillProgress1.sizeDelta = new Vector2 (skillProgress1.sizeDelta.x,(1 - GlobalData.statProgress1 / 7 )* Screen.height / 5);
-		skillProgress2.sizeDelta = new Vector2 (skillProgress2.sizeDelta.x,(1 - GlobalData.statProgress2 / 7 )* Screen.height / 5);
-		skillProgress3.sizeDelta = new Vector2 (skillProgress3.sizeDelta.x,(1 - GlobalData.statProgress3 / 7 )* Screen.height / 5);
-		skillProgress4.sizeDelta = new Vector2 (skillProgress4.sizeDelta.x,(1 - GlobalData.statProgress4 / 7 )* Screen.height / 5);
-
+	
 		int temp = (int)(GlobalData.unityFinalTime - GlobalData.unityTime);
 		unityTime.text = temp + "";
 	}

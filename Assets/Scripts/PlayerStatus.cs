@@ -18,6 +18,14 @@ public class PlayerStatus{
 	public float pointfireSpeed = 0;
 
 	public int pointLeft;
+
+	public float class1 = 0;
+	public float class2 = 0;
+	public float class3 = 0;
+	public float class4 = 0;
+
+	public int pointClass;
+
 	public PlayerController.PlayerClass currentClass;
 
 	public PlayerStatus(PlayerController.PlayerClass playerClass){
