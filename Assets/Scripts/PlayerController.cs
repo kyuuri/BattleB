@@ -7,6 +7,7 @@ public class PlayerController : NetworkBehaviour
 
 	public enum PlayerClass {NOVICE, SHOTGUN, CANNON, BLADER, SNIPER};
 	public float baseEXP = 50;
+	public float maxEXP = 100;
 
 	public int playerId;
 	public int score;
@@ -32,6 +33,10 @@ public class PlayerController : NetworkBehaviour
 	void Start(){
 		status = new PlayerStatus (playerClass);
 		playerId = (int)GetComponent<NetworkIdentity> ().netId.Value;
+
+		if (isLocalPlayer) {
+			transform.position = new Vector3 (Random.Range (-5, 5), 0, Random.Range (-5, 5));
+		}
 	}
 
 	void Update()
@@ -176,8 +181,15 @@ public class PlayerController : NetworkBehaviour
 				status.exp = 10000.0f;
 			} else {
 				status.exp = (float)baseEXP * Mathf.Pow (1.2f, status.level) + status.exp;
+				maxEXP = (float)baseEXP * Mathf.Pow (1.2f, status.level);
+
+				GlobalData.exp = status.exp;
+				GlobalData.maxExp = maxEXP;
 			}
 			status.pointLeft += 1;
+			GlobalData.lv = status.level;
+			GlobalData.statPoint = status.pointLeft;
+
 			Debug.Log ("Level UP + " + status.level);
 		}
 	}
@@ -185,24 +197,32 @@ public class PlayerController : NetworkBehaviour
 	void UpStat(){
 		if (status.pointLeft > 0) {
 			if (Input.GetKeyDown (KeyCode.Keypad1) || (Input.GetKeyDown (KeyCode.Alpha1))) {
-				if (status.pointMaxHp < 5) {
+				if (status.pointMaxHp < 7) {
 					status.pointMaxHp++;
 					status.pointLeft--;
+					GlobalData.statPoint = status.pointLeft;
+					GlobalData.statProgress1 = status.pointMaxHp;
 				}
 			} else if (Input.GetKeyDown (KeyCode.Keypad2) || (Input.GetKeyDown (KeyCode.Alpha2))) {
-				if (status.pointMoveSpeed < 5) {
+				if (status.pointMoveSpeed < 7) {
 					status.pointMoveSpeed++;
 					status.pointLeft--;
+					GlobalData.statPoint = status.pointLeft;
+					GlobalData.statProgress2 = status.pointMoveSpeed;
 				}
 			} else if (Input.GetKeyDown (KeyCode.Keypad3) || (Input.GetKeyDown (KeyCode.Alpha3))) {
-				if (status.pointbulletSpeed < 5) {
+				if (status.pointbulletSpeed < 7) {
 					status.pointbulletSpeed++;
 					status.pointLeft--;
+					GlobalData.statPoint = status.pointLeft;
+					GlobalData.statProgress3 = status.pointbulletSpeed;
 				}
 			} else if (Input.GetKeyDown (KeyCode.Keypad4) || (Input.GetKeyDown (KeyCode.Alpha4))) {
-				if (status.pointfireSpeed < 5) {
+				if (status.pointfireSpeed < 7) {
 					status.pointfireSpeed++;
 					status.pointLeft--;
+					GlobalData.statPoint = status.pointLeft;
+					GlobalData.statProgress4 = status.pointfireSpeed;
 				}
 			}
 
@@ -252,6 +272,8 @@ public class PlayerController : NetworkBehaviour
 			bs[i].GetComponent<Bullet> ().damage = status.damage;
 			NetworkServer.Spawn(bs[i]);
 
+			bs[i].GetComponent<Bullet> ().playerId = (int)netId.Value;
+
 			Destroy(bs[i], 0.6f);
 
 
@@ -273,6 +295,8 @@ public class PlayerController : NetworkBehaviour
 
 		// Spawn the bullet on the Clients
 		NetworkServer.Spawn(bullet);
+
+		bullet.GetComponent<Bullet> ().playerId = (int)netId.Value;
 
 		// Destroy the bullet after 2 seconds
 		Destroy(bullet, 2.5f);
@@ -299,6 +323,8 @@ public class PlayerController : NetworkBehaviour
 			}
 			bladeObject = bullet;
 
+			bullet.GetComponent<BladeScript> ().playerId = (int)netId.Value;
+
 			// Destroy the bullet after 2 seconds
 		}
 		blade = !blade;
@@ -318,6 +344,8 @@ public class PlayerController : NetworkBehaviour
 		// Spawn the bullet on the Clients
 		NetworkServer.Spawn(bullet);
 
+		bullet.GetComponent<SniperBullet> ().playerId = (int)netId.Value;
+
 		// Destroy the bullet after 2 seconds
 		Destroy(bullet, 10.0f);
 	}
@@ -334,6 +362,7 @@ public class PlayerController : NetworkBehaviour
 	public void RpcAddExp(float exp){
 		if (isLocalPlayer) {
 			status.exp -= exp;
+			GlobalData.exp = status.exp;
 		}
 	}
 
@@ -341,6 +370,7 @@ public class PlayerController : NetworkBehaviour
 	public void RpcAddScore(){
 		if (isLocalPlayer) {
 			score++;
+			GlobalData.kill = score;
 		}
 	}
 

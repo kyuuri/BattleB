@@ -24,7 +24,7 @@ public class Health : NetworkBehaviour {
 		if (currentHealth <= 0) {
 			float exp = currentHealth + amount;
 
-			SendEXP (exp/2.0f + 50, playerId);
+			SendEXP (exp/3.0f + 20, playerId);
 			SendScore (playerId);
 			
 			if (destroyOnDeath) {
@@ -36,7 +36,7 @@ public class Health : NetworkBehaviour {
 				RpcRespawn ();
 			}
 		} else {
-			SendEXP (amount / 2.0f, playerId);
+			SendEXP (amount / 3.0f, playerId);
 		}
 	}
 
@@ -73,7 +73,7 @@ public class Health : NetworkBehaviour {
 	{        if (isLocalPlayer)
 		{
 			// Set the player’s position to origin
-			transform.position = Vector3.zero;
+			transform.position = new Vector3 (Random.Range (-5, 5), 0, Random.Range (-5, 5));
 		}
 	}
 }
